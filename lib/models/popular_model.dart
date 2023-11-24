@@ -20,9 +20,9 @@ class PopularDietsModel {
 
     popularDiets.add(
       PopularDietsModel(
-       name: 'Blueberry Pancake',
-       iconPath: 'assets/blueberry-pancake.svg',
-       level: 'Medium',
+       name: 'Steve Ndicunguye',
+       iconPath: 'https://lh3.googleusercontent.com/a/AGNmyxbsEy7JSTGCaqtDN6xBs9LmnTU7ngsaQFeJOmFz=s96-c',
+       level: 'ndicunguyesteve4@gmail.com',
        duration: '30mins',
        calorie: '230kCal',
        boxIsSelected: true,
@@ -31,9 +31,9 @@ class PopularDietsModel {
 
     popularDiets.add(
       PopularDietsModel(
-       name: 'Salmon Nigiri',
-       iconPath: 'assets/salmon-nigiri.svg',
-       level: 'Easy',
+       name: 'Emmanuel Nkubito',
+       iconPath: 'https://lh3.googleusercontent.com/a/AGNmyxbsEy7JSTGCaqtDN6xBs9LmnTU7ngsaQFeJOmFz=s96-c',
+       level: 'nkubitoemmanuel@gmail.com',
        duration: '20mins',
        calorie: '120kCal',
        boxIsSelected: false,

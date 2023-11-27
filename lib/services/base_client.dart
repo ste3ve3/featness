@@ -11,10 +11,18 @@ class ApiResponse<T> {
 
   ApiResponse.loading() : status = Status.LOADING;
   ApiResponse.completed(this.data) : status = Status.COMPLETED;
-  ApiResponse.error(this.error) : status = Status.ERROR;
 }
 
-enum Status { LOADING, COMPLETED, ERROR }
+class ApiException implements Exception {
+  final String message;
+
+  ApiException(this.message);
+
+  @override
+  String toString() => message;
+}
+
+enum Status { LOADING, COMPLETED }
 
 class BaseClient {
   var client = http.Client();
@@ -23,7 +31,7 @@ class BaseClient {
     try {
       var url = Uri.parse(baseUrl + api);
       var headers = {
-        'app-id': '65616f978a69f92e3239b091'
+        'app-id': '6564b42915e99d4dfee32b6a'
       };
 
       var response = await client.get(url, headers: headers);
@@ -31,10 +39,12 @@ class BaseClient {
       if (response.statusCode == 200) {
         return ApiResponse.completed(response.body);
       } else {
-        return ApiResponse.error("Failed to fetch data. Status code: ${response.statusCode}");
+        var errorJson = json.decode(response.body);
+        var errorMessage = errorJson['error'] as String? ?? 'Something went wrong!';
+        throw ApiException(errorMessage);
       }
-    } catch (e) {
-      return ApiResponse.error("Error: $e");
+    } catch (error) {
+      throw ApiException("$error");
     }
   }
 
@@ -44,7 +54,7 @@ class BaseClient {
       var payload = json.encode(object);
       var headers = {
         'Content-Type': 'application/json',
-        'app-id': '65616f978a69f92e3239b091'
+        'app-id': '6564b42915e99d4dfee32b6a'
       };
 
       var response = await client.post(url, body: payload, headers: headers);
@@ -52,10 +62,19 @@ class BaseClient {
       if (response.statusCode == 201) {
         return ApiResponse.completed(response.body);
       } else {
-        return ApiResponse.error("Failed to post data. Status code: ${response.statusCode}");
+        var errorJson = json.decode(response.body);
+        var error = errorJson['error'] as String? ?? 'Something went wrong!';
+        var errorDetails = errorJson['data'] as Map<String, dynamic>?;
+        var errorMessage = '$error\n';
+        if (errorDetails != null) {
+          errorDetails.forEach((key, value) {
+            errorMessage += "$key: $value\n";
+          });
+        }
+        throw ApiException(errorMessage);
       }
-    } catch (e) {
-      return ApiResponse.error("Error: $e");
+    } catch (error) {
+      throw ApiException("$error");
     }
   }
 
@@ -65,7 +84,7 @@ class BaseClient {
       var payload = json.encode(object);
       var headers = {
         'Content-Type': 'application/json',
-        'app-id': '65616f978a69f92e3239b091'
+        'app-id': '6564b42915e99d4dfee32b6a'
       };
 
       var response = await client.put(url, body: payload, headers: headers);
@@ -73,10 +92,12 @@ class BaseClient {
       if (response.statusCode == 200) {
         return ApiResponse.completed(response.body);
       } else {
-        return ApiResponse.error("Failed to update data. Status code: ${response.statusCode}");
+        var errorJson = json.decode(response.body);
+        var errorMessage = errorJson['error'] as String? ?? 'Something went wrong!';
+        throw ApiException(errorMessage);
       }
-    } catch (e) {
-      return ApiResponse.error("Error: $e");
+    } catch (error) {
+      throw ApiException("$error");
     }
   }
 
@@ -84,7 +105,7 @@ class BaseClient {
     try {
       var url = Uri.parse(baseUrl + api);
       var headers = {
-        'app-id': '65616f978a69f92e3239b091'
+        'app-id': '6564b42915e99d4dfee32b6a'
       };
 
       var response = await client.delete(url, headers: headers);
@@ -92,10 +113,12 @@ class BaseClient {
       if (response.statusCode == 200) {
         return ApiResponse.completed(response.body);
       } else {
-        return ApiResponse.error("Failed to delete data. Status code: ${response.statusCode}");
+        var errorJson = json.decode(response.body);
+        var errorMessage = errorJson['error'] as String? ?? 'Something went wrong!';
+        throw ApiException(errorMessage);
       }
-    } catch (e) {
-      return ApiResponse.error("Error: $e");
+    } catch (error) {
+      throw ApiException("$error");
     }
   }
 }

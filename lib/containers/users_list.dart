@@ -6,24 +6,12 @@ import 'package:popover/popover.dart';
 
 Padding usersList(dynamic allUsers) {
     final users = allUsers.data;
-
+    print(users[0]);
     return Padding(
       padding: const EdgeInsets.only(left:20, right:20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          const BottomSheetContainer(
-            padding: EdgeInsets.only(top: 10, right: 20, bottom: 10, left: 20),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-            ),
-            child: Text(
-              "Add User",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-          const SizedBox(height: 20,),
           SingleChildScrollView(
             child: ListView.separated(
               scrollDirection: Axis.vertical,
@@ -68,7 +56,7 @@ Padding usersList(dynamic allUsers) {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                fullName.length > 20 ? "${fullName.substring(0, 20)}..." : fullName,
+                                fullName.length > 12 ? "${fullName.substring(0, 12)}..." : fullName,
                                 style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,

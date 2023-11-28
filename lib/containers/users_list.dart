@@ -1,12 +1,106 @@
-// ignore_for_file: file_names
-import 'package:featnessapp/containers/bottom_sheet.dart';
+// ignore_for_file: file_names, use_build_context_synchronously
+import 'package:featnessapp/models/user_details_model.dart';
+import 'package:featnessapp/pages/add_user.dart';
+import 'package:featnessapp/pages/home.dart';
+import 'package:featnessapp/services/base_client.dart';
 import 'package:featnessapp/widgets/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:popover/popover.dart';
 
-Padding usersList(dynamic allUsers) {
+Padding usersList(dynamic allUsers, BuildContext context, Function setState, bool detailsLoading) {
     final users = allUsers.data;
-    print(users[0]);
+    final BaseClient baseClient = BaseClient();
+
+    void getUserDetails(userId) async {
+    try {
+      setState(() {
+        detailsLoading = true;
+      });
+      final ApiResponse<dynamic> response = await baseClient.get('/user/$userId');
+      setState(() {
+        detailsLoading = false;
+      });
+      if (response.status == Status.COMPLETED) {
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AddUser(currentUser: userDetailsFromJson(response.rawResponse))),
+        );
+      } else {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Center(child: Text("${response.error}")),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 10),
+            showCloseIcon: true,
+            backgroundColor: Colors.black,
+          ),
+        );
+      }
+    } catch (e) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Center(child: Text("$e")),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 10),
+          showCloseIcon: true,
+          backgroundColor: Colors.black,
+        ),
+      );
+    }
+  }
+
+    void deleteUser(userId) async {
+    try {
+      // setState(() {
+      //   detailsLoading = true;
+      // });
+      final ApiResponse<dynamic> response = await baseClient.delete('/user/$userId');
+      // setState(() {
+      //   detailsLoading = false;
+      // });
+      if (response.status == Status.COMPLETED) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Center(child: Text("User deleted successfully!")),
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 10),
+            showCloseIcon: true,
+            backgroundColor: Colors.black,
+          ),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      } else {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Center(child: Text("${response.error}")),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 10),
+            showCloseIcon: true,
+            backgroundColor: Colors.black,
+          ),
+        );
+      }
+    } catch (e) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Center(child: Text("$e")),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 10),
+          showCloseIcon: true,
+          backgroundColor: Colors.black,
+        ),
+      );
+    }
+  }
+
     return Padding(
       padding: const EdgeInsets.only(left:20, right:20),
       child: Column(
@@ -92,19 +186,30 @@ Padding usersList(dynamic allUsers) {
                                   child: ListView(
                                     padding: const EdgeInsets.all(10),
                                     children: [
-                                      const BottomSheetContainer(
+                                      GestureDetector(
+                                        onTap: () {
+                                          getUserDetails(users[index].id);
+                                        },
                                         child: Row(
                                         children: [
-                                          Icon(Icons.edit, color: Colors.green,),
-                                          SizedBox(width: 5,),
-                                          Text(
+                                          detailsLoading ? 
+                                            const SizedBox(
+                                              width: 22.0,
+                                              height: 22.0,
+                                              child: CircularProgressIndicator(
+                                                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                                              ),
+                                            )
+                                           : 
+                                          const Icon(Icons.edit, color: Colors.green,),
+                                          const SizedBox(width: 5,),
+                                          const Text(
                                             "Edit",
                                             style: TextStyle(
                                               color: Colors.green,
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ],                                                                              ),
                                       ),
                                       const SizedBox(height: 15,),
                                       GestureDetector(
@@ -117,7 +222,7 @@ Padding usersList(dynamic allUsers) {
                                             'Delete',
                                             Colors.red
                                           ) ?? false) {
-                                            return debugPrint('pressedOK');
+                                            deleteUser(users[index].id);
                                           }
                                           return debugPrint('pressedCancel');
                                         },

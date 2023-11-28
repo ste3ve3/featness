@@ -8,9 +8,10 @@ class ApiResponse<T> {
   Status status;
   T? data;
   String? error;
+  T? rawResponse;
 
   ApiResponse.loading() : status = Status.LOADING;
-  ApiResponse.completed(this.data) : status = Status.COMPLETED;
+  ApiResponse.completed(this.data, {this.rawResponse}) : status = Status.COMPLETED;
 }
 
 class ApiException implements Exception {
@@ -37,7 +38,7 @@ class BaseClient {
       var response = await client.get(url, headers: headers);
 
       if (response.statusCode == 200) {
-        return ApiResponse.completed(response.body);
+        return ApiResponse.completed(response.body, rawResponse: response.body);
       } else {
         var errorJson = json.decode(response.body);
         var errorMessage = errorJson['error'] as String? ?? 'Something went wrong!';
@@ -59,7 +60,7 @@ class BaseClient {
 
       var response = await client.post(url, body: payload, headers: headers);
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         return ApiResponse.completed(response.body);
       } else {
         var errorJson = json.decode(response.body);

@@ -42,6 +42,7 @@ class _BottomSheetState extends State<BottomSheetContainer> {
     }
   }
 
+
   Future<String?> imageToBase64() async {
     if (selectedImage == null) return null;
 
